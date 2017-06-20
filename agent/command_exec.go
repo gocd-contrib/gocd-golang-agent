@@ -31,6 +31,7 @@ func CommandExec(s *BuildSession, cmd *protocol.BuildCommand) error {
 	execCmd.Stdout = s.secrets
 	execCmd.Stderr = s.secrets
 	execCmd.Dir = s.wd
+        execCmd.Stdin = strings.NewReader(cmd.ExecInput)
 	done := make(chan error)
 	if err := execCmd.Start(); err != nil {
 		return err
