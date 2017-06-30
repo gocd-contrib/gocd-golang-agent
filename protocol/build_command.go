@@ -26,7 +26,7 @@ const (
 
 	RunIfConfigAny    = "any"
 	RunIfConfigPassed = "passed"
-        ExecInput         = ""
+	ExecInput         = ""
 
 	CommandCompose             = "compose"
 	CommandCond                = "cond"
@@ -53,7 +53,7 @@ type BuildCommand struct {
 	Name             string
 	Args             map[string]string
 	RunIfConfig      string
-        ExecInput        string
+	ExecInput        string
 	SubCommands      []*BuildCommand
 	WorkingDirectory string
 	Test             *BuildCommand
@@ -234,8 +234,8 @@ func (cmd *BuildCommand) Setwd(wd string) *BuildCommand {
 }
 
 func (cmd *BuildCommand) SetExecInput(input string) *BuildCommand {
-        cmd.ExecInput = input
-        return cmd
+	cmd.ExecInput = input
+	return cmd
 }
 
 func (cmd *BuildCommand) RunIf(c string) *BuildCommand {
