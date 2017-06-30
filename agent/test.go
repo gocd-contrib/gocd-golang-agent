@@ -43,10 +43,10 @@ func CommandTest(s *BuildSession, cmd *protocol.BuildCommand) error {
 				return Err("expected different with '%v'", expected)
 			}
 		} else if flag == "-in" {
-                  return strings.contains(expected, actual);
-                } else if flag == "-nin" {
-                  return !strings.contains(expected, actual);
-                }
+			return strings.Contains(expected, actual)
+		} else if flag == "-nin" {
+			return !strings.Contains(expected, actual)
+		}
 		return nil
 	}
 
