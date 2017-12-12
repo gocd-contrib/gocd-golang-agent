@@ -51,7 +51,6 @@ type Config struct {
 	AgentCertFile       string
 	AgentIdFile         string
 	AgentTokenFile      string
-	string
 	OutputDebugLog      bool
 }
 
