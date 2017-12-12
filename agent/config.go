@@ -34,6 +34,7 @@ type Config struct {
 	ContextPath        string
 	WebSocketPath      string
 	RegistrationPath   string
+	TokenPath          string
 	WorkingDir         string
 	LogDir             string
 	ConfigDir          string
@@ -49,6 +50,8 @@ type Config struct {
 	AgentPrivateKeyFile string
 	AgentCertFile       string
 	AgentIdFile         string
+	AgentTokenFile      string
+	string
 	OutputDebugLog      bool
 }
 
@@ -79,6 +82,7 @@ func LoadConfig() *Config {
 		AgentPrivateKeyFile:              filepath.Join(configDir, "agent-private-key.pem"),
 		AgentCertFile:                    filepath.Join(configDir, "agent-cert.pem"),
 		AgentIdFile:                      filepath.Join(configDir, "agent-id"),
+		AgentTokenFile:                   filepath.Join(configDir, "token"),
 		AgentAutoRegisterKey:             os.Getenv("GOCD_AGENT_AUTO_REGISTER_KEY"),
 		AgentAutoRegisterResources:       os.Getenv("GOCD_AGENT_AUTO_REGISTER_RESOURCES"),
 		AgentAutoRegisterEnvironments:    os.Getenv("GOCD_AGENT_AUTO_REGISTER_ENVIRONMENTS"),
@@ -87,6 +91,7 @@ func LoadConfig() *Config {
 		OutputDebugLog:                   os.Getenv("DEBUG") != "",
 		WebSocketPath:                    readEnv("GOCD_SERVER_WEB_SOCKET_PATH", "/agent-websocket"),
 		RegistrationPath:                 readEnv("GOCD_SERVER_REGISTRATION_PATH", "/admin/agent"),
+		TokenPath:                        readEnv( "GOCD_SERVER_TOKEN_PATH", "/admin/agent/token"),
 		IpAddress:                        lookupIpAddress(serverUrl.Host),
 	}
 }
@@ -131,6 +136,10 @@ func (c *Config) WssServerURL() string {
 
 func (c *Config) RegistrationURL() (*url.URL, error) {
 	return c.MakeFullServerURL(c.RegistrationPath)
+}
+
+func (c *Config) TokenURL(agentID string) (*url.URL, error) {
+	return c.MakeFullServerURL(c.TokenPath + "?uuid=" + agentID)
 }
 
 func (c *Config) MakeFullServerURL(u string) (*url.URL, error) {

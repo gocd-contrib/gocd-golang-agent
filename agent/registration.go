@@ -109,6 +109,9 @@ func Register() error {
 	if err := ReadGoServerCACert(); err != nil {
 		return err
 	}
+	if err := requestToken(); err != nil {
+		return err
+	}
 	if err := readAgentKeyAndCerts(registerData()); err != nil {
 		return err
 	}
@@ -131,6 +134,44 @@ func CleanRegistration() error {
 	return nil
 }
 
+
+func requestToken() error {
+	_, agentTokenErr := os.Stat(config.AgentTokenFile)
+	if agentTokenErr == nil {
+		return nil
+	}
+
+	client, err := GoServerRemoteClient(false)
+	if err != nil {
+		return err
+	}
+
+	url, err := config.TokenURL(AgentId)
+	if agentTokenErr != nil {
+		LogInfo( "fetching token from : %v", url.String())
+	}
+	resp, err := client.Get(url.String())
+
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusOK {
+		bodyBytes, err2 := ioutil.ReadAll(resp.Body)
+		if err2 == nil {
+			ioutil.WriteFile(config.AgentTokenFile, []byte(string(bodyBytes)), 0600)
+		}else{
+			LogInfo("Token fetched but cannot read body")
+			return err2
+		}
+	}else{
+		LogInfo("Cannot fetch token from : %v", url)
+		return err
+	}
+
+	return nil
+}
+
 func registerData() map[string]string {
 	return map[string]string{
 		"hostname":                      config.Hostname,
@@ -148,21 +189,36 @@ func registerData() map[string]string {
 }
 
 func readAgentKeyAndCerts(params map[string]string) error {
+	var token string
 	_, agentPrivateKeyFileErr := os.Stat(config.AgentPrivateKeyFile)
 	_, agentCertFileErr := os.Stat(config.AgentCertFile)
-	if agentPrivateKeyFileErr == nil && agentCertFileErr == nil {
+	_, agentTokenFileErr := os.Stat(config.AgentTokenFile)
+	if agentPrivateKeyFileErr == nil && agentCertFileErr == nil && agentTokenFileErr == nil {
 		return nil
-	}
-
-	form := url.Values{}
-	for k, v := range params {
-		form.Add(k, v)
 	}
 
 	client, err := GoServerRemoteClient(false)
 	if err != nil {
 		return err
 	}
+
+
+	if _, err := os.Stat(config.AgentTokenFile); err == nil {
+		data, err2 := ioutil.ReadFile(config.AgentTokenFile)
+		if err2 != nil {
+			logger.Error.Printf("failed to read token file(%v): %v", config.AgentTokenFile, err2)
+			return err2
+		} else {
+			token = string(data)
+		}
+	}
+	form := url.Values{}
+	for k, v := range params {
+		form.Add(k, v)
+	}
+	form.Add("token",token)
+
+
 
 	url, err := config.RegistrationURL()
 	LogInfo("fetching agent key and certificates from: %v", url)
