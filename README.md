@@ -45,6 +45,8 @@ Check out source
 Building the agent binary
 * go run src/github.com/gocd-contrib/gocd-golang-agent/build/build.go
 
+### Download
+Pre-build binary can be found here : https://bintray.com/gocd-contrib
 
 ## Contributing
 
