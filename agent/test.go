@@ -26,7 +26,7 @@ import (
 func CommandTest(s *BuildSession, cmd *protocol.BuildCommand) error {
 	flag := cmd.Args["flag"]
 
-	if flag == "-eq" || flag == "-neq" {
+	if flag == "-eq" || flag == "-neq" || flag == "-in" || flag == "-nin" {
 		output, err := s.processTestCommand(cmd.SubCommands[0])
 		if err != nil {
 			s.debugLog("test -eq exec command error: %v", err)
@@ -38,9 +38,17 @@ func CommandTest(s *BuildSession, cmd *protocol.BuildCommand) error {
 			if expected != actual {
 				return Err("expected '%v', but was '%v'", expected, actual)
 			}
-		} else {
+		} else if flag == "-neq" {
 			if expected == actual {
 				return Err("expected different with '%v'", expected)
+			}
+		} else if flag == "-in" {
+			if !strings.Contains(expected, actual) {
+				return Err("expected command to contain '%v'", expected)
+			}
+		} else if flag == "-nin" {
+			if strings.Contains(expected, actual) {
+				return Err("expected command to not contain '%v'", expected)
 			}
 		}
 		return nil

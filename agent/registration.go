@@ -185,6 +185,7 @@ func registerData() map[string]string {
 		"agentAutoRegisterHostname":     config.Hostname,
 		"elasticAgentId":                config.AgentAutoRegisterElasticAgentId,
 		"elasticPluginId":               config.AgentAutoRegisterElasticPluginId,
+		"supportsBuildCommandProtocol":  "true",
 	}
 }
 
