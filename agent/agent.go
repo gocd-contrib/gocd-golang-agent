@@ -66,7 +66,7 @@ func Initialize() {
 		}
 	}
 	if AgentId == "" {
-		AgentId = uuid.NewV4().String()
+		AgentId = uuid.Must(uuid.NewV4()).String()
 		ioutil.WriteFile(config.AgentIdFile, []byte(AgentId), 0644)
 	}
 }

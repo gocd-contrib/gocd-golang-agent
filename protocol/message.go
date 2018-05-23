@@ -36,9 +36,9 @@ const (
 )
 
 type Message struct {
-	Action string `json:"action"`
-	Data   string `json:"data"`
-	AcknowledgeId  string `json:"acknowledgementId"`
+	Action        string `json:"action"`
+	Data          string `json:"data"`
+	AcknowledgeId string `json:"acknowledgementId"`
 }
 
 func (m *Message) DataBuild() *Build {
@@ -72,9 +72,9 @@ func newMessage(action string, data interface{}) *Message {
 	}
 
 	return &Message{
-		Action: action,
-		Data:   string(json),
-		AcknowledgeId:  uuid.NewV4().String(),
+		Action:        action,
+		Data:          string(json),
+		AcknowledgeId: uuid.Must(uuid.NewV4()).String(),
 	}
 }
 
